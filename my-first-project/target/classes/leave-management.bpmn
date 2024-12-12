@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_0g082wi" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.30.0" modeler:executionPlatform="Camunda Platform" modeler:executionPlatformVersion="7.22.0">
+  <bpmn:collaboration id="Collaboration_0ne7m5h">
+    <bpmn:participant id="LeaveApproval" name="Leave Approval Application" processRef="LeaveApprovalProcess" />
+  </bpmn:collaboration>
+  <bpmn:process id="LeaveApprovalProcess" name="Leave Approval Process" isExecutable="true">
+    <bpmn:startEvent id="StartEvent_1" name="Process Start Event">
+      <bpmn:extensionElements>
+        <camunda:formData />
+      </bpmn:extensionElements>
+      <bpmn:outgoing>Flow_11r2oy4</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:serviceTask id="Activity_143xelb" name="Check Leave Balance" camunda:delegateExpression="${leaveCheckService}">
+      <bpmn:extensionElements />
+      <bpmn:incoming>Flow_11r2oy4</bpmn:incoming>
+      <bpmn:outgoing>Flow_1qe9fnc</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:sequenceFlow id="Flow_11r2oy4" sourceRef="StartEvent_1" targetRef="Activity_143xelb" />
+    <bpmn:sequenceFlow id="Flow_1qe9fnc" sourceRef="Activity_143xelb" targetRef="manager-approval" />
+    <bpmn:sequenceFlow id="Flow_1izsr0n" sourceRef="manager-approval" targetRef="hr-approval" />
+    <bpmn:endEvent id="Event_04xwm0s" name="Process End Event">
+      <bpmn:incoming>Flow_0nrv4qf</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:userTask id="hr-approval" name="HR Approval" camunda:assignee="hr">
+      <bpmn:extensionElements>
+        <camunda:formData>
+          <camunda:formField id="hr-approve" label="HR Approve" type="boolean" defaultValue="false" />
+        </camunda:formData>
+        <camunda:taskListener delegateExpression="${hrApprovalListener}" event="create" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_1izsr0n</bpmn:incoming>
+      <bpmn:outgoing>Flow_0nrv4qf</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:sequenceFlow id="Flow_0nrv4qf" sourceRef="hr-approval" targetRef="Event_04xwm0s" />
+    <bpmn:userTask id="manager-approval" name="Manager Approval" camunda:assignee="manager">
+      <bpmn:extensionElements>
+        <camunda:formData>
+          <camunda:formField id="approve" label="Manager Approval" type="boolean" defaultValue="false" />
+        </camunda:formData>
+        <camunda:taskListener delegateExpression="${managerApprovalListener}" event="create" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_1qe9fnc</bpmn:incoming>
+      <bpmn:outgoing>Flow_1izsr0n</bpmn:outgoing>
+    </bpmn:userTask>
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Collaboration_0ne7m5h">
+      <bpmndi:BPMNShape id="Participant_1ll1q4h_di" bpmnElement="LeaveApproval" isHorizontal="true">
+        <dc:Bounds x="160" y="82" width="688" height="250" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="StartEvent_1_di" bpmnElement="StartEvent_1">
+        <dc:Bounds x="210" y="182" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="195" y="225" width="67" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_143xelb_di" bpmnElement="Activity_143xelb">
+        <dc:Bounds x="310" y="160" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_04xwm0s_di" bpmnElement="Event_04xwm0s">
+        <dc:Bounds x="762" y="182" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="749" y="225" width="63" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0d15k2m_di" bpmnElement="hr-approval">
+        <dc:Bounds x="630" y="160" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0492df8_di" bpmnElement="manager-approval">
+        <dc:Bounds x="470" y="160" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_11r2oy4_di" bpmnElement="Flow_11r2oy4">
+        <di:waypoint x="246" y="200" />
+        <di:waypoint x="310" y="200" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1qe9fnc_di" bpmnElement="Flow_1qe9fnc">
+        <di:waypoint x="410" y="200" />
+        <di:waypoint x="470" y="200" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1izsr0n_di" bpmnElement="Flow_1izsr0n">
+        <di:waypoint x="570" y="200" />
+        <di:waypoint x="630" y="200" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0nrv4qf_di" bpmnElement="Flow_0nrv4qf">
+        <di:waypoint x="730" y="200" />
+        <di:waypoint x="762" y="200" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>
